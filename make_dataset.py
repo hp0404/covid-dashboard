@@ -1,4 +1,5 @@
 import os
+import requests
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -7,6 +8,7 @@ from collections import Counter
 
 
 URL = "https://raw.githubusercontent.com/VasiaPiven/covid19_ua/master/covid19_by_area_type_hosp_dynamics.csv"
+API = "https://api.github.com/repos/VasiaPiven/covid19_ua/branches/master"
 TODAY = datetime.today().strftime("%Y-%m-%d")
 CURRENT_LOCATION = os.path.dirname(os.path.abspath(__file__))
 LIKARNI_LOCATION = os.path.join(CURRENT_LOCATION, "data")
@@ -328,6 +330,12 @@ def make_dataset():
 
 if __name__ == "__main__":
     
-    if not os.path.isfile(SAVE_FILE):
+    r = requests.get(API).json()
+    latest_commit = r["commit"]["commit"]["committer"]["date"]
+    commit_date = datetime.strptime(
+        latest_commit, "%Y-%m-%dT%H:%M:%SZ"
+        ).strftime("%Y-%m-%d")
+    
+    if not os.path.isfile(SAVE_FILE) and commit_date == TODAY:
         make_dataset()
     
