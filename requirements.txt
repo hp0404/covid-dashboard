@@ -1,3 +1,5 @@
 numpy
 pandas
+xlrd
+openpyxl
 requests
