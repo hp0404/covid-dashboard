@@ -4,7 +4,7 @@ on:
   push:
   workflow_dispatch:
   schedule:
-    - cron: '0 9-15 * * *'
+    - cron: '30 9-15 * * *'
 
 jobs:
   build:
@@ -31,6 +31,7 @@ jobs:
         python makedataset.py
     - name: Commit and push if changed
       run: |-
+        git diff
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add data/outputs/
