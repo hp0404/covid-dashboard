@@ -4,7 +4,7 @@ on:
   push:
   workflow_dispatch:
   schedule:
-    - cron: '30 9-15 * * *'
+    - cron: '*/15 8-15 * * *'
 
 jobs:
   build:
@@ -35,5 +35,6 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add data/outputs/
-        git commit -m "Updated dataset" || exit 0
+        timestamp=$(TZ='UTC+3' date '+%F %T')
+        git commit -m "Updated dataset at ${timestamp}" || exit 0
         git push
