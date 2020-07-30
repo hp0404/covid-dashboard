@@ -11,7 +11,7 @@ from collections import Counter
 URL = "https://raw.githubusercontent.com/VasiaPiven/covid19_ua/master/covid19_by_area_type_hosp_dynamics.csv"
 API = "https://api.github.com/repos/VasiaPiven/covid19_ua/branches/master"
 TODAY = datetime.today().strftime("%Y-%m-%d")
-TOKEN = os.environ.get("DASHBOARD", "")
+TOKEN = os.environ.get("TOKEN", "")
 CURRENT_LOCATION = os.path.dirname(os.path.abspath(__file__))
 LIKARNI_LOCATION = os.path.join(CURRENT_LOCATION, "data")
 OUTPUTS_LOCATION = os.path.join(CURRENT_LOCATION, "data", "outputs")
