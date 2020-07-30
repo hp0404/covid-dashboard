@@ -341,8 +341,6 @@ if __name__ == "__main__":
         ]
     )
 
-    print(TOKEN)
-
     r = requests.get(API, headers={"Authorization": f"Bearer {TOKEN}"}).json()
     latest_commit = r["commit"]["commit"]["committer"]["date"]
     commit_date = datetime.strptime(
