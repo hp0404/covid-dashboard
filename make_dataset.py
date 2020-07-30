@@ -11,6 +11,7 @@ from collections import Counter
 URL = "https://raw.githubusercontent.com/VasiaPiven/covid19_ua/master/covid19_by_area_type_hosp_dynamics.csv"
 API = "https://api.github.com/repos/VasiaPiven/covid19_ua/branches/master"
 TODAY = datetime.today().strftime("%Y-%m-%d")
+TOKEN = os.environ.get("DASHBOARD", "")
 CURRENT_LOCATION = os.path.dirname(os.path.abspath(__file__))
 LIKARNI_LOCATION = os.path.join(CURRENT_LOCATION, "data")
 OUTPUTS_LOCATION = os.path.join(CURRENT_LOCATION, "data", "outputs")
@@ -340,17 +341,18 @@ if __name__ == "__main__":
         ]
     )
 
-    r = requests.get(API).json()
+    print(TOKEN)
+
+    r = requests.get(API, headers={"Authorization": f"Bearer {TOKEN}"}).json()
     latest_commit = r["commit"]["commit"]["committer"]["date"]
     commit_date = datetime.strptime(
         latest_commit, "%Y-%m-%dT%H:%M:%SZ"
     ).strftime("%Y-%m-%d")
-    
+
     logging.info(f"Останнє оновлення НСЗУ: {commit_date}")
-    
+
     if not os.path.isfile(SAVE_FILE) and commit_date == TODAY:
         make_dataset()
         logging.info(f"Скрипт виконався успішно, датасет оновлено")
     else:
         logging.info("Скрипт не виконувався, тому що датасет вже був оновлений")
-    
