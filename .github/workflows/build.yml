@@ -34,6 +34,8 @@ jobs:
         git diff
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add data/outputs/
-        git commit -m "Updated dataset" || exit 0
+        git add data/outputs/*.log
+        git commit -m "Updated log"
+        git add data/outputs/*.csv
+        git commit -m "Updated dataset"
         git push

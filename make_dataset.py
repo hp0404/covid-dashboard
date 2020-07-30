@@ -1,5 +1,6 @@
 import os
 import requests
+import logging
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -319,23 +320,37 @@ def make_dataset():
         .str.replace(",", ".").astype(float)
     )
 
-    print("total confirmed cases", complete_table["new_confirm"].sum())
-    print("total confirmed deaths", complete_table["new_death"].sum())
-    print("total confirmed recoveries", complete_table["new_recover"].sum())
+    assert df["new_confirm"].sum() == complete_table["new_confirm"].sum()
+    assert df["new_death"].sum() == complete_table["new_death"].sum()
+    assert df["new_recover"].sum() == complete_table["new_recover"].sum() 
 
     complete_table.to_csv(
             SAVE_FILE, sep=";", index=False
-        )
+    )
 
 
 if __name__ == "__main__":
     
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s]: %(message)s",
+        handlers=[
+            logging.FileHandler("./data/outputs/make_dataset.log"),
+            logging.StreamHandler()
+        ]
+    )
+
     r = requests.get(API).json()
     latest_commit = r["commit"]["commit"]["committer"]["date"]
     commit_date = datetime.strptime(
         latest_commit, "%Y-%m-%dT%H:%M:%SZ"
-        ).strftime("%Y-%m-%d")
+    ).strftime("%Y-%m-%d")
+    
+    logging.info(f"Останнє оновлення НСЗУ: {commit_date}")
     
     if not os.path.isfile(SAVE_FILE) and commit_date == TODAY:
         make_dataset()
+        logging.info(f"Скрипт виконався успішно, датасет оновлено")
+    else:
+        logging.info("Скрипт не виконувався, тому що датасет вже був оновлений")
     
