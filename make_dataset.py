@@ -347,8 +347,6 @@ if __name__ == "__main__":
         latest_commit, "%Y-%m-%dT%H:%M:%SZ"
     ).strftime("%Y-%m-%d")
 
-    logging.info(f"Останнє оновлення НСЗУ: {commit_date}")
-
     if not os.path.isfile(SAVE_FILE) and commit_date == TODAY:
         make_dataset()
         logging.info(f"Скрипт виконався успішно, датасет оновлено")
