@@ -74,7 +74,6 @@ def agg(table):
     7   2020-04-26  36338715      Жіноча                   Ні                 1
     8   2020-04-25  36338715      Чоловіча                 Ні                 3
     9   2020-04-25  36338715      Чоловіча                 Ні                 1
-
     
     >>> agg(df)
         zvit_date   edrpou_hosp   person_gender            is_medical_worker  active_confirm
@@ -301,10 +300,19 @@ def filling_unused(table: pd.DataFrame, drop_metadata: bool = True) -> pd.DataFr
 
 
 def make_dataset():
-
-    df = pd.read_csv(URL)
-    df.loc[df["zvit_date"] == "2002-05-22", "zvit_date"] = "2020-05-22"
-    df.loc[df["zvit_date"] == "2010-05-24", "zvit_date"] = "2020-05-24"
+    
+    addresses = pd.read_csv(
+        f"{LIKARNI_LOCATION}/addresses_2020-09-08.csv", 
+        dtype={"edrpou_hosp": str}
+    )
+    data = pd.read_csv(URL)
+    
+    df = pd.merge(
+        data, addresses,
+        on="edrpou_hosp",
+        how="left"
+    )
+    
     aggregated = agg(df)
     active_hospitals = filling_inactive(aggregated)
     pending_calc = merge_pending(active_hospitals)
@@ -341,7 +349,8 @@ if __name__ == "__main__":
         ]
     )
 
-    r = requests.get(API, headers={"Authorization": f"Bearer {TOKEN}"}).json()
+    # r = requests.get(API, headers={"Authorization": f"Bearer {TOKEN}"}).json()
+    r = requests.get(API).json()
     latest_commit = r["commit"]["commit"]["committer"]["date"]
     commit_date = datetime.strptime(
         latest_commit, "%Y-%m-%dT%H:%M:%SZ"
@@ -349,6 +358,7 @@ if __name__ == "__main__":
 
     if not os.path.isfile(SAVE_FILE) and commit_date == TODAY:
         make_dataset()
-        logging.info(f"Скрипт виконався успішно, датасет оновлено")
+        # logging.info(f"Скрипт виконався успішно, датасет оновлено")
     else:
-        logging.info("Скрипт не виконувався")
+        # logging.info("Скрипт не виконувався")
+        pass
