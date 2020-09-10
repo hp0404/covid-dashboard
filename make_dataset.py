@@ -349,8 +349,7 @@ if __name__ == "__main__":
         ]
     )
 
-    # r = requests.get(API, headers={"Authorization": f"Bearer {TOKEN}"}).json()
-    r = requests.get(API).json()
+    r = requests.get(API, headers={"Authorization": f"Bearer {TOKEN}"}).json()
     latest_commit = r["commit"]["commit"]["committer"]["date"]
     commit_date = datetime.strptime(
         latest_commit, "%Y-%m-%dT%H:%M:%SZ"
@@ -358,7 +357,6 @@ if __name__ == "__main__":
 
     if not os.path.isfile(SAVE_FILE) and commit_date == TODAY:
         make_dataset()
-        # logging.info(f"Скрипт виконався успішно, датасет оновлено")
+        logging.info(f"Скрипт виконався успішно, датасет оновлено")
     else:
-        # logging.info("Скрипт не виконувався")
-        pass
+        logging.info("Скрипт не виконувався")
