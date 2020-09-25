@@ -12,31 +12,33 @@ TOKEN = os.environ.get("TOKEN", "")
 TODAY = datetime.today().strftime("%Y-%m-%d")
 CURRENT_LOCATION = os.path.dirname(os.path.abspath(__file__))
 OUTPUTS_LOCATION = os.path.join(CURRENT_LOCATION, "data", "outputs")
-SAVE_FILE = f"{OUTPUTS_LOCATION}/monitoring_v5_{TODAY}.csv"
+
+LOG = os.path.join(OUTPUTS_LOCATION, "make_dataset.log")
+DATASET = os.path.join(OUTPUTS_LOCATION,  f"monitoring_v5_{TODAY}.csv")
 
 
 def make_dataset():
     """ Додає АР Крим до таблиці. """
     data = pd.read_csv(URL)
-    dates = data["zvit_date"].unique()
+    unique_dates = data["zvit_date"].unique()
     crimea = pd.DataFrame(
         {
-            "zvit_date": dates,
+            "zvit_date": unique_dates,
             "registration_area": ["Автономна Республіка Крим"],
         },
-        index=np.arange(len(dates))
+        index=np.arange(len(unique_dates))
     )
     df = data.append(crimea)
-    df.to_csv(SAVE_FILE, sep=";", index=False)
+    df.to_csv(DATASET, sep=";", index=False)
 
 
 if __name__ == "__main__":
-    
+
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s]: %(message)s",
         handlers=[
-            logging.FileHandler("./data/outputs/make_dataset.log"),
+            logging.FileHandler(LOG),
             logging.StreamHandler()
         ]
     )
@@ -45,8 +47,8 @@ if __name__ == "__main__":
     latest_commit = r["commit"]["commit"]["committer"]["date"]
     commit_date = datetime.strptime(latest_commit, "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%d")
 
-    if not os.path.isfile(SAVE_FILE) and commit_date == TODAY:
+    if not os.path.isfile(DATASET) and commit_date == TODAY:
         make_dataset()
-        logging.info("Скрипт виконався успішно, датасет оновлено")
+        logging.info("Скрипт виконався успішно")
     else:
         logging.info("Скрипт не виконувався")
